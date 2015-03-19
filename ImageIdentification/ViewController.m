@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-
+#import "ImageTargetsViewController.h"
 @interface ViewController ()
 
 @end
@@ -22,6 +22,10 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (IBAction)goScan {
+    [self presentViewController:[[ImageTargetsViewController alloc] init] animated:YES completion:nil];
 }
 
 @end
