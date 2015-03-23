@@ -43,7 +43,7 @@
         extendedTrackingIsOn = NO;
         
         // a single tap will trigger a single autofocus operation
-        tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(autofocus:)];
+        tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
         [self.view addGestureRecognizer:tapGestureRecognizer];
         
         // we use the iOS notification to pause/resume the AR when the application goes (or come back from) background
@@ -64,6 +64,8 @@
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
+//    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+//    [self.view addGestureRecognizer:tap];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -403,6 +405,15 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - play
+- (void)handleTap:(UITapGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        // handling code
+        CGPoint touchPoint = [sender locationInView:self.view];
+        [(ImageTargetsEAGLView *)self.view handleTouchPoint:touchPoint];
+    }
 }
 
 @end

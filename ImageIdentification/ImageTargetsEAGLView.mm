@@ -6,6 +6,7 @@
 //  Copyright (c) 2015年 北京金溪欣网络科技有限公司. All rights reserved.
 //
 #define NUM_AUGMENTATION_TEXTURES 4
+#define NUM_VIDEO_TARGETS 4
 
 #import <QuartzCore/QuartzCore.h>
 #import <OpenGLES/ES2/gl.h>
@@ -18,12 +19,15 @@
 #import <Renderer.h>
 #import <TrackableResult.h>
 #import <VideoBackgroundConfig.h>
+#import <ImageTarget.h>
 
 #import "ImageTargetsEAGLView.h"
 #import "Texture.h"
 #import "SampleApplicationUtils.h"
 #import "SampleApplicationShaderUtils.h"
 #import "Teapot.h"
+#import "Quad.h"
+#include "SampleMath.h"
 
 namespace {
     // --- Data private to this unit ---
@@ -35,10 +39,18 @@ namespace {
         "TextureTeapotRed.png",
         "building_texture.jpeg"
     };
-    
+    int touchedTarget = -1;
     // Model scale factor
-    const float kObjectScaleNormal = 3.0f;
-    const float kObjectScaleOffTargetTracking = 12.0f;
+    struct tagVideoData {
+        // Needed to calculate whether a screen tap is inside the target
+        QCAR::Matrix44F modelViewMatrix;
+        
+        // Trackable dimensions
+        QCAR::Vec2F targetPositiveDimensions;
+        
+        // Currently active flag
+        BOOL isActive;
+    } videoData[NUM_VIDEO_TARGETS];
 }
 
 @interface ImageTargetsEAGLView () {
@@ -61,12 +73,14 @@ namespace {
     GLint texSampler2DHandle;
     
     // Texture used when rendering augmentation
-    Texture* augmentationTexture[NUM_AUGMENTATION_TEXTURES];
-    
-    BOOL offTargetTrackingEnabled;
+    Texture* augmentationTexture;
     SampleApplication3DModel * buildingModel;
     
     SampleApplicationSession * vapp;
+    NSLock* dataLock;
+
+    float touchLocation_X;
+    float touchLocation_Y;
 }
 
 @end
@@ -94,11 +108,8 @@ namespace {
         if (YES == [vapp isRetinaDisplay]) {
             [self setContentScaleFactor:2.0f];
         }
-        
-        // Load the augmentation textures
-        for (int i = 0; i < NUM_AUGMENTATION_TEXTURES; ++i) {
-            augmentationTexture[i] = [[Texture alloc] initWithImageFile:[NSString stringWithCString:textureFilenames[i] encoding:NSASCIIStringEncoding]];
-        }
+        const char* textureFilenames = "playBtn.png";
+        augmentationTexture = [[Texture alloc] initWithImageFile:[NSString stringWithCString:textureFilenames encoding:NSASCIIStringEncoding]];
         
         // Create the OpenGL ES context
         context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
@@ -109,19 +120,18 @@ namespace {
             [EAGLContext setCurrentContext:context];
         }
         
-        // Generate the OpenGL ES texture and upload the texture data for use
-        // when rendering the augmentation
-        for (int i = 0; i < NUM_AUGMENTATION_TEXTURES; ++i) {
-            GLuint textureID;
-            glGenTextures(1, &textureID);
-            [augmentationTexture[i] setTextureID:textureID];
-            glBindTexture(GL_TEXTURE_2D, textureID);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, [augmentationTexture[i] width], [augmentationTexture[i] height], 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)[augmentationTexture[i] pngData]);
-        }
+        GLuint textureID;
+        glGenTextures(1, &textureID);
+        [augmentationTexture setTextureID:textureID];
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, [augmentationTexture width], [augmentationTexture height], 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)[augmentationTexture pngData]);
         
-        offTargetTrackingEnabled = NO;
+        for (int i = 0; i < NUM_VIDEO_TARGETS; ++i) {
+            videoData[i].targetPositiveDimensions.data[0] = 0.0f;
+            videoData[i].targetPositiveDimensions.data[1] = 0.0f;
+        }
         
         [self loadBuildingsModel];
         [self initShaders];
@@ -170,88 +180,121 @@ namespace {
     // We must detect if background reflection is active and adjust the culling direction.
     // If the reflection is active, this means the pose matrix has been reflected as well,
     // therefore standard counter clockwise face culling will result in "inside out" models.
-    if (offTargetTrackingEnabled) {
-        glDisable(GL_CULL_FACE);
-    } else {
-        glEnable(GL_CULL_FACE);
-    }
+    glEnable(GL_CULL_FACE);
+
     glCullFace(GL_BACK);
-    if(QCAR::Renderer::getInstance().getVideoBackgroundConfig().mReflection == QCAR::VIDEO_BACKGROUND_REFLECTION_ON)
-        glFrontFace(GL_CW);  //Front camera
-    else
-        glFrontFace(GL_CCW);   //Back camera
-    
+    if(QCAR::Renderer::getInstance().getVideoBackgroundConfig().mReflection == QCAR::VIDEO_BACKGROUND_REFLECTION_ON) {
+        // Front camera
+        glFrontFace(GL_CW);
+    }
+    else {
+        // Back camera
+        glFrontFace(GL_CCW);
+    }
+
+    [dataLock lock];
+    for (int i = 0; i < NUM_VIDEO_TARGETS; ++i) {
+        videoData[i].isActive = NO;
+    }
     
     for (int i = 0; i < state.getNumTrackableResults(); ++i) {
         // Get the trackable
         const QCAR::TrackableResult* result = state.getTrackableResult(i);
-        const QCAR::Trackable& trackable = result->getTrackable();
-        
-        //const QCAR::Trackable& trackable = result->getTrackable();
-        QCAR::Matrix44F modelViewMatrix = QCAR::Tool::convertPose2GLMatrix(result->getPose());
-        
-        // OpenGL 2
-        QCAR::Matrix44F modelViewProjection;
-        
-        if (offTargetTrackingEnabled) {
-            SampleApplicationUtils::rotatePoseMatrix(90, 1, 0, 0,&modelViewMatrix.data[0]);
-            SampleApplicationUtils::scalePoseMatrix(kObjectScaleOffTargetTracking, kObjectScaleOffTargetTracking, kObjectScaleOffTargetTracking, &modelViewMatrix.data[0]);
-        } else {
-            SampleApplicationUtils::translatePoseMatrix(0.0f, 0.0f, kObjectScaleNormal, &modelViewMatrix.data[0]);
-            SampleApplicationUtils::scalePoseMatrix(kObjectScaleNormal, kObjectScaleNormal, kObjectScaleNormal, &modelViewMatrix.data[0]);
+        const QCAR::ImageTarget& imageTarget = (const QCAR::ImageTarget&) result->getTrackable();
+
+        int playerIndex = -1;
+        if (strcmp(imageTarget.getName(), "0") == 0)
+        {
+            playerIndex = 0;
+        }else if (strcmp(imageTarget.getName(), "1") == 0) {
+            playerIndex = 1;
+        }else if (strcmp(imageTarget.getName(), "IMG_0159") == 0) {
+            playerIndex = 2;
+        }else if (strcmp(imageTarget.getName(), "3") == 0) {
+            playerIndex = 3;
         }
         
-        SampleApplicationUtils::multiplyMatrix(&vapp.projectionMatrix.data[0], &modelViewMatrix.data[0], &modelViewProjection.data[0]);
+        videoData[playerIndex].isActive = YES;
         
+        if (0.0f == videoData[playerIndex].targetPositiveDimensions.data[0] ||
+            0.0f == videoData[playerIndex].targetPositiveDimensions.data[1]) {
+            const QCAR::ImageTarget& imageTarget = (const QCAR::ImageTarget&) result->getTrackable();
+            
+            QCAR::Vec3F size = imageTarget.getSize();
+            videoData[playerIndex].targetPositiveDimensions.data[0] = size.data[0];
+            videoData[playerIndex].targetPositiveDimensions.data[1] = size.data[1];
+            
+            // The pose delivers the centre of the target, thus the dimensions
+            // go from -width / 2 to width / 2, and -height / 2 to height / 2
+            videoData[playerIndex].targetPositiveDimensions.data[0] /= 2.0f;
+            videoData[playerIndex].targetPositiveDimensions.data[1] /= 2.0f;
+        }
+
+        //const QCAR::Trackable& trackable = result->getTrackable();
+        const QCAR::Matrix34F& trackablePose = result->getPose();
+        videoData[playerIndex].modelViewMatrix = QCAR::Tool::convertPose2GLMatrix(trackablePose);
+        // OpenGL 2
+
+        QCAR::Matrix44F projMatrix = vapp.projectionMatrix;
+        
+        QCAR::Matrix44F modelViewMatrixButton = QCAR::Tool::convertPose2GLMatrix(trackablePose);
+        QCAR::Matrix44F modelViewProjectionButton;
+        
+        SampleApplicationUtils::translatePoseMatrix(0.0f, 0.0f, 2.0f, &modelViewMatrixButton.data[0]);
+        
+        SampleApplicationUtils::scalePoseMatrix(videoData[playerIndex].targetPositiveDimensions.data[1]/5,
+                                                videoData[playerIndex].targetPositiveDimensions.data[1]/5,
+                                                videoData[playerIndex].targetPositiveDimensions.data[1]/5,
+                                                &modelViewMatrixButton.data[0]);
+        
+        SampleApplicationUtils::multiplyMatrix(projMatrix.data,
+                                               &modelViewMatrixButton.data[0] ,
+                                               &modelViewProjectionButton.data[0]);
+        glDepthFunc(GL_LEQUAL);
         glUseProgram(shaderProgramID);
         
-        if (offTargetTrackingEnabled) {
-            glVertexAttribPointer(vertexHandle, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)buildingModel.vertices);
-            glVertexAttribPointer(normalHandle, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)buildingModel.normals);
-            glVertexAttribPointer(textureCoordHandle, 2, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)buildingModel.texCoords);
-        } else {
-            glVertexAttribPointer(vertexHandle, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)teapotVertices);
-            glVertexAttribPointer(normalHandle, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)teapotNormals);
-            glVertexAttribPointer(textureCoordHandle, 2, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)teapotTexCoords);
-        }
+        glVertexAttribPointer(vertexHandle, 3, GL_FLOAT, GL_FALSE, 0, quadVertices);
+        glVertexAttribPointer(normalHandle, 3, GL_FLOAT, GL_FALSE, 0, quadNormals);
+        glVertexAttribPointer(textureCoordHandle, 2, GL_FLOAT, GL_FALSE, 0, quadTexCoords);
         
         glEnableVertexAttribArray(vertexHandle);
         glEnableVertexAttribArray(normalHandle);
         glEnableVertexAttribArray(textureCoordHandle);
         
         // Choose the texture based on the target name
-        int targetIndex = 0; // "stones"
-        if (!strcmp(trackable.getName(), "chips"))
-            targetIndex = 1;
-        else if (!strcmp(trackable.getName(), "tarmac"))
-            targetIndex = 2;
-        
+        GLuint iconTextureID = [augmentationTexture textureID];
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         glActiveTexture(GL_TEXTURE0);
-        
-        if (offTargetTrackingEnabled) {
-            glBindTexture(GL_TEXTURE_2D, augmentationTexture[3].textureID);
-        } else {
-            glBindTexture(GL_TEXTURE_2D, augmentationTexture[targetIndex].textureID);
-        }
-        glUniformMatrix4fv(mvpMatrixHandle, 1, GL_FALSE, (const GLfloat*)&modelViewProjection.data[0]);
+        glBindTexture(GL_TEXTURE_2D, iconTextureID);
+        glUniformMatrix4fv(mvpMatrixHandle, 1, GL_FALSE, (const GLfloat*)&modelViewProjectionButton.data[0]);
         glUniform1i(texSampler2DHandle, 0 /*GL_TEXTURE0*/);
+
+        glDrawElements(GL_TRIANGLES, NUM_QUAD_INDEX, GL_UNSIGNED_SHORT, quadIndices);
         
-        if (offTargetTrackingEnabled) {
-            glDrawArrays(GL_TRIANGLES, 0, buildingModel.numVertices);
-        } else {
-            glDrawElements(GL_TRIANGLES, NUM_TEAPOT_OBJECT_INDEX, GL_UNSIGNED_SHORT, (const GLvoid*)teapotIndices);
-        }
+        glDisable(GL_BLEND);
+        glDisableVertexAttribArray(vertexHandle);
+        glDisableVertexAttribArray(normalHandle);
+        glDisableVertexAttribArray(textureCoordHandle);
+
+        glUseProgram(0);
+        
+        glDepthFunc(GL_LESS);
         
         SampleApplicationUtils::checkGlError("EAGLView renderFrameQCAR");
-        
+
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            UILabel *lab = [[UILabel alloc] initWithFrame:CGRectMake(150, 150, 50, 50)];
+//            lab.text = @"play";
+//            lab.backgroundColor = [UIColor redColor];
+//            [self addSubview:lab];
+//        });
     }
-    
+    [dataLock unlock];
+
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
-    
-    glDisableVertexAttribArray(vertexHandle);
-    glDisableVertexAttribArray(normalHandle);
-    glDisableVertexAttribArray(textureCoordHandle);
     
     QCAR::Renderer::getInstance().end();
     [self presentFramebuffer];
@@ -358,6 +401,59 @@ namespace {
         [EAGLContext setCurrentContext:context];
         glFinish();
     }
+}
+
+#pragma mark - User interaction
+
+- (bool) handleTouchPoint:(CGPoint) point {
+    // Store the current touch location
+    touchLocation_X = point.x;
+    touchLocation_Y = point.y;
+    
+    // Determine which target was touched (if no target was touch, touchedTarget
+    // will be -1)
+    touchedTarget = [self tapInsideTargetWithID];
+    if (touchedTarget != -1) {
+        NSLog(@"%d",touchedTarget);
+        return YES;
+    }else {
+        return NO;
+    }
+}
+
+- (int)tapInsideTargetWithID
+{
+    QCAR::Vec3F intersection, lineStart, lineEnd;
+    // Get the current projection matrix
+    QCAR::Matrix44F projectionMatrix = [vapp projectionMatrix];
+    QCAR::Matrix44F inverseProjMatrix = SampleMath::Matrix44FInverse(projectionMatrix);
+    CGRect rect = [self bounds];
+    int touchInTarget = -1;
+    
+    // ----- Synchronise data access -----
+    [dataLock lock];
+    
+    // The target returns as pose the centre of the trackable.  Thus its
+    // dimensions go from -width / 2 to width / 2 and from -height / 2 to
+    // height / 2.  The following if statement simply checks that the tap is
+    // within this range
+    for (int i = 0; i < NUM_VIDEO_TARGETS; ++i) {
+        SampleMath::projectScreenPointToPlane(inverseProjMatrix, videoData[i].modelViewMatrix, rect.size.width, rect.size.height,QCAR::Vec2F(touchLocation_X, touchLocation_Y), QCAR::Vec3F(0, 0, 0), QCAR::Vec3F(0, 0, 1), intersection, lineStart, lineEnd);
+        
+        if ((intersection.data[0] >= -videoData[i].targetPositiveDimensions.data[0]) && (intersection.data[0] <= videoData[i].targetPositiveDimensions.data[0]) &&
+            (intersection.data[1] >= -videoData[i].targetPositiveDimensions.data[1]) && (intersection.data[1] <= videoData[i].targetPositiveDimensions.data[1])) {
+            // The tap is only valid if it is inside an active target
+            if (YES == videoData[i].isActive) {
+                touchInTarget = i;
+                break;
+            }
+        }
+    }
+    
+    [dataLock unlock];
+    // ----- End synchronise data access -----
+    
+    return touchInTarget;
 }
 
 @end

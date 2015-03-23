@@ -39,6 +39,9 @@
 		F03ABC471ABAB1EB00C7945C /* StonesAndChips.xml in Resources */ = {isa = PBXBuildFile; fileRef = F03ABC451ABAB1EB00C7945C /* StonesAndChips.xml */; };
 		F03ABC4A1ABAB28500C7945C /* Tarmac.dat in Resources */ = {isa = PBXBuildFile; fileRef = F03ABC481ABAB28500C7945C /* Tarmac.dat */; };
 		F03ABC4B1ABAB28500C7945C /* Tarmac.xml in Resources */ = {isa = PBXBuildFile; fileRef = F03ABC491ABAB28500C7945C /* Tarmac.xml */; };
+		F0AF59601ABFAAB400FE8385 /* playBtn.png in Resources */ = {isa = PBXBuildFile; fileRef = F0AF595F1ABFAAB400FE8385 /* playBtn.png */; };
+		F0AF59621ABFAE7500FE8385 /* IMG_0159.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F0AF59611ABFAE7500FE8385 /* IMG_0159.jpg */; };
+		F0BE34C51ABC261D00D535F8 /* SampleMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F0BE34C41ABC261D00D535F8 /* SampleMath.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -149,6 +152,10 @@
 		F03ABC451ABAB1EB00C7945C /* StonesAndChips.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = StonesAndChips.xml; sourceTree = "<group>"; };
 		F03ABC481ABAB28500C7945C /* Tarmac.dat */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tarmac.dat; sourceTree = "<group>"; };
 		F03ABC491ABAB28500C7945C /* Tarmac.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Tarmac.xml; sourceTree = "<group>"; };
+		F0AF595F1ABFAAB400FE8385 /* playBtn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = playBtn.png; sourceTree = "<group>"; };
+		F0AF59611ABFAE7500FE8385 /* IMG_0159.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = IMG_0159.jpg; sourceTree = "<group>"; };
+		F0BE34C31ABC261D00D535F8 /* SampleMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleMath.h; sourceTree = "<group>"; };
+		F0BE34C41ABC261D00D535F8 /* SampleMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SampleMath.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -204,6 +211,8 @@
 				F03ABC3C1ABAA0BA00C7945C /* ImageTargetsViewController.xib */,
 				F03ABC3F1ABAA15000C7945C /* ImageTargetsEAGLView.h */,
 				F03ABC401ABAA15000C7945C /* ImageTargetsEAGLView.mm */,
+				F0BE34C31ABC261D00D535F8 /* SampleMath.h */,
+				F0BE34C41ABC261D00D535F8 /* SampleMath.cpp */,
 				F03ABB491ABA79CA00C7945C /* Supporting Files */,
 			);
 			path = ImageIdentification;
@@ -227,6 +236,8 @@
 				F03ABC451ABAB1EB00C7945C /* StonesAndChips.xml */,
 				F03ABC481ABAB28500C7945C /* Tarmac.dat */,
 				F03ABC491ABAB28500C7945C /* Tarmac.xml */,
+				F0AF595F1ABFAAB400FE8385 /* playBtn.png */,
+				F0AF59611ABFAE7500FE8385 /* IMG_0159.jpg */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -422,11 +433,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				F03ABC381ABAA02100C7945C /* Simple.vertsh in Resources */,
+				F0AF59621ABFAE7500FE8385 /* IMG_0159.jpg in Resources */,
 				F03ABC4A1ABAB28500C7945C /* Tarmac.dat in Resources */,
 				F03ABC351ABAA02100C7945C /* Line.fragsh in Resources */,
 				F03ABC361ABAA02100C7945C /* Line.vertsh in Resources */,
 				F03ABC3E1ABAA0BA00C7945C /* ImageTargetsViewController.xib in Resources */,
 				F03ABC431ABAAD3100C7945C /* buildings.txt in Resources */,
+				F0AF59601ABFAAB400FE8385 /* playBtn.png in Resources */,
 				F03ABC461ABAB1EB00C7945C /* StonesAndChips.dat in Resources */,
 				F03ABC371ABAA02100C7945C /* Simple.fragsh in Resources */,
 				F03ABC4B1ABAB28500C7945C /* Tarmac.xml in Resources */,
@@ -446,6 +459,7 @@
 			files = (
 				F03ABC411ABAA15000C7945C /* ImageTargetsEAGLView.mm in Sources */,
 				F03ABB521ABA79CA00C7945C /* ViewController.m in Sources */,
+				F0BE34C51ABC261D00D535F8 /* SampleMath.cpp in Sources */,
 				F03ABC331ABAA02100C7945C /* SampleApplicationShaderUtils.m in Sources */,
 				F03ABC341ABAA02100C7945C /* SampleApplicationUtils.cpp in Sources */,
 				F03ABC3D1ABAA0BA00C7945C /* ImageTargetsViewController.mm in Sources */,
@@ -602,6 +616,7 @@
 				F03ABB6B1ABA79CA00C7945C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
