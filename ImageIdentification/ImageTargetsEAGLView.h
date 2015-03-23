@@ -17,5 +17,5 @@
 
 @interface ImageTargetsEAGLView : UIView <UIGLViewProtocol, SampleGLResourceHandler>
 - (id)initWithFrame:(CGRect)frame appSession:(SampleApplicationSession *) app;
-- (bool) handleTouchPoint:(CGPoint) touchPoint;
+- (int) handleTouchPoint:(CGPoint) touchPoint;
 @end

@@ -14,6 +14,7 @@
 #import <TrackerManager.h>
 #import <Trackable.h>
 #import <ObjectTracker.h>
+#import <MediaPlayer/MediaPlayer.h>
 
 @interface ImageTargetsViewController ()  <SampleApplicationControl>{
     CGRect viewFrame;
@@ -21,7 +22,6 @@
     QCAR::DataSet*  dataSetCurrent;
     QCAR::DataSet*  dataSetTarmac;
     QCAR::DataSet*  dataSetStonesAndChips;
-    UITapGestureRecognizer * tapGestureRecognizer;
     SampleApplicationSession * vapp;
     
     BOOL switchToTarmac;
@@ -43,8 +43,8 @@
         extendedTrackingIsOn = NO;
         
         // a single tap will trigger a single autofocus operation
-        tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
-        [self.view addGestureRecognizer:tapGestureRecognizer];
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+        [self.view addGestureRecognizer:tap];
         
         // we use the iOS notification to pause/resume the AR when the application goes (or come back from) background
         
@@ -59,13 +59,17 @@
          selector:@selector(resumeAR)
          name:UIApplicationDidBecomeActiveNotification
          object:nil];
+        
+        [[NSNotificationCenter defaultCenter]
+         addObserver:self
+         selector:@selector(resumeAR)
+         name:MPMoviePlayerPlaybackDidFinishNotification
+         object:nil];
     }
     return self;
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
-//    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
-//    [self.view addGestureRecognizer:tap];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -99,10 +103,9 @@
     [vapp initAR:QCAR::GL_20 ARViewBoundsSize:viewFrame.size orientation:UIInterfaceOrientationPortrait];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    // cleanup menu
-//    [[SampleAppMenu instance]clear];
-
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
     [vapp stopAR:nil];
     // Be a good OpenGL ES citizen: now that QCAR is paused and the render
     // thread is not executing, inform the root view controller that the
@@ -113,9 +116,7 @@
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     appDelegate.glResourceHandler = nil;
     
-    [super viewWillDisappear:animated];
 }
-
 /*
 #pragma mark - Navigation
 
@@ -126,7 +127,7 @@
 }
 */
 #pragma mark - 聚焦
-- (void)autofocus:(UITapGestureRecognizer *)sender
+- (void)autofocus
 {
     [self performSelector:@selector(cameraPerformAutoFocus) withObject:nil afterDelay:.4];
 }
@@ -412,8 +413,21 @@
     if (sender.state == UIGestureRecognizerStateEnded) {
         // handling code
         CGPoint touchPoint = [sender locationInView:self.view];
-        [(ImageTargetsEAGLView *)self.view handleTouchPoint:touchPoint];
+        int resValue = [(ImageTargetsEAGLView *)self.view handleTouchPoint:touchPoint];
+        if (resValue != -1) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSString *videoStr = [NSString stringWithFormat:@"%d",resValue];
+                NSString *videoPath = [[NSBundle mainBundle] pathForResource:videoStr ofType:@"mp4"];
+                if (!videoPath) {
+                    return;
+                }
+                MPMoviePlayerViewController *player = [[MPMoviePlayerViewController alloc] initWithContentURL:[NSURL fileURLWithPath:videoPath]];
+                [self presentMoviePlayerViewControllerAnimated:player];
+                [self pauseAR];
+            });
+        }else {
+            [self autofocus];
+        }
     }
 }
-
 @end

@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		F03ABB4C1ABA79CA00C7945C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F03ABB4B1ABA79CA00C7945C /* main.m */; };
 		F03ABB4F1ABA79CA00C7945C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F03ABB4E1ABA79CA00C7945C /* AppDelegate.m */; };
-		F03ABB521ABA79CA00C7945C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F03ABB511ABA79CA00C7945C /* ViewController.m */; };
-		F03ABB551ABA79CA00C7945C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F03ABB531ABA79CA00C7945C /* Main.storyboard */; };
 		F03ABB571ABA79CA00C7945C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F03ABB561ABA79CA00C7945C /* Images.xcassets */; };
 		F03ABB5A1ABA79CA00C7945C /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = F03ABB581ABA79CA00C7945C /* LaunchScreen.xib */; };
 		F03ABBB71ABA7F0C00C7945C /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F03ABBB61ABA7F0C00C7945C /* CoreVideo.framework */; };
@@ -37,11 +35,12 @@
 		F03ABC431ABAAD3100C7945C /* buildings.txt in Resources */ = {isa = PBXBuildFile; fileRef = F03ABC421ABAAD3100C7945C /* buildings.txt */; };
 		F03ABC461ABAB1EB00C7945C /* StonesAndChips.dat in Resources */ = {isa = PBXBuildFile; fileRef = F03ABC441ABAB1EB00C7945C /* StonesAndChips.dat */; };
 		F03ABC471ABAB1EB00C7945C /* StonesAndChips.xml in Resources */ = {isa = PBXBuildFile; fileRef = F03ABC451ABAB1EB00C7945C /* StonesAndChips.xml */; };
-		F03ABC4A1ABAB28500C7945C /* Tarmac.dat in Resources */ = {isa = PBXBuildFile; fileRef = F03ABC481ABAB28500C7945C /* Tarmac.dat */; };
-		F03ABC4B1ABAB28500C7945C /* Tarmac.xml in Resources */ = {isa = PBXBuildFile; fileRef = F03ABC491ABAB28500C7945C /* Tarmac.xml */; };
 		F0AF59601ABFAAB400FE8385 /* playBtn.png in Resources */ = {isa = PBXBuildFile; fileRef = F0AF595F1ABFAAB400FE8385 /* playBtn.png */; };
 		F0AF59621ABFAE7500FE8385 /* IMG_0159.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F0AF59611ABFAE7500FE8385 /* IMG_0159.jpg */; };
 		F0BE34C51ABC261D00D535F8 /* SampleMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F0BE34C41ABC261D00D535F8 /* SampleMath.cpp */; };
+		F0F42BAD1ABFB57900EE9FBE /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0F42BAC1ABFB57900EE9FBE /* MediaPlayer.framework */; };
+		F0F42BB11ABFBD8500EE9FBE /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F42BAF1ABFBD8500EE9FBE /* MainViewController.m */; };
+		F0F42BB21ABFBD8500EE9FBE /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0F42BB01ABFBD8500EE9FBE /* MainViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,9 +49,6 @@
 		F03ABB4B1ABA79CA00C7945C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		F03ABB4D1ABA79CA00C7945C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		F03ABB4E1ABA79CA00C7945C /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		F03ABB501ABA79CA00C7945C /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		F03ABB511ABA79CA00C7945C /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		F03ABB541ABA79CA00C7945C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		F03ABB561ABA79CA00C7945C /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		F03ABB591ABA79CA00C7945C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		F03ABBB61ABA7F0C00C7945C /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
@@ -150,12 +146,14 @@
 		F03ABC421ABAAD3100C7945C /* buildings.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = buildings.txt; sourceTree = "<group>"; };
 		F03ABC441ABAB1EB00C7945C /* StonesAndChips.dat */ = {isa = PBXFileReference; lastKnownFileType = file; path = StonesAndChips.dat; sourceTree = "<group>"; };
 		F03ABC451ABAB1EB00C7945C /* StonesAndChips.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = StonesAndChips.xml; sourceTree = "<group>"; };
-		F03ABC481ABAB28500C7945C /* Tarmac.dat */ = {isa = PBXFileReference; lastKnownFileType = file; path = Tarmac.dat; sourceTree = "<group>"; };
-		F03ABC491ABAB28500C7945C /* Tarmac.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Tarmac.xml; sourceTree = "<group>"; };
 		F0AF595F1ABFAAB400FE8385 /* playBtn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = playBtn.png; sourceTree = "<group>"; };
 		F0AF59611ABFAE7500FE8385 /* IMG_0159.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = IMG_0159.jpg; sourceTree = "<group>"; };
 		F0BE34C31ABC261D00D535F8 /* SampleMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleMath.h; sourceTree = "<group>"; };
 		F0BE34C41ABC261D00D535F8 /* SampleMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SampleMath.cpp; sourceTree = "<group>"; };
+		F0F42BAC1ABFB57900EE9FBE /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		F0F42BAE1ABFBD8500EE9FBE /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
+		F0F42BAF1ABFBD8500EE9FBE /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
+		F0F42BB01ABFBD8500EE9FBE /* MainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,6 +161,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F0F42BAD1ABFB57900EE9FBE /* MediaPlayer.framework in Frameworks */,
 				F03ABBC51ABA7F4B00C7945C /* CoreMotion.framework in Frameworks */,
 				F03ABBC31ABA7F4000C7945C /* OpenGLES.framework in Frameworks */,
 				F03ABBC11ABA7F3900C7945C /* SystemConfiguration.framework in Frameworks */,
@@ -201,9 +200,9 @@
 				F03ABBD11ABA9AC300C7945C /* build */,
 				F03ABB4D1ABA79CA00C7945C /* AppDelegate.h */,
 				F03ABB4E1ABA79CA00C7945C /* AppDelegate.m */,
-				F03ABB501ABA79CA00C7945C /* ViewController.h */,
-				F03ABB511ABA79CA00C7945C /* ViewController.m */,
-				F03ABB531ABA79CA00C7945C /* Main.storyboard */,
+				F0F42BAE1ABFBD8500EE9FBE /* MainViewController.h */,
+				F0F42BAF1ABFBD8500EE9FBE /* MainViewController.m */,
+				F0F42BB01ABFBD8500EE9FBE /* MainViewController.xib */,
 				F03ABB561ABA79CA00C7945C /* Images.xcassets */,
 				F03ABB581ABA79CA00C7945C /* LaunchScreen.xib */,
 				F03ABC3A1ABAA0BA00C7945C /* ImageTargetsViewController.h */,
@@ -221,6 +220,7 @@
 		F03ABB491ABA79CA00C7945C /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				F0F42BAC1ABFB57900EE9FBE /* MediaPlayer.framework */,
 				F03ABBB61ABA7F0C00C7945C /* CoreVideo.framework */,
 				F03ABBB81ABA7F1700C7945C /* CoreMedia.framework */,
 				F03ABBBA1ABA7F1E00C7945C /* AVFoundation.framework */,
@@ -234,8 +234,6 @@
 				F03ABC421ABAAD3100C7945C /* buildings.txt */,
 				F03ABC441ABAB1EB00C7945C /* StonesAndChips.dat */,
 				F03ABC451ABAB1EB00C7945C /* StonesAndChips.xml */,
-				F03ABC481ABAB28500C7945C /* Tarmac.dat */,
-				F03ABC491ABAB28500C7945C /* Tarmac.xml */,
 				F0AF595F1ABFAAB400FE8385 /* playBtn.png */,
 				F0AF59611ABFAE7500FE8385 /* IMG_0159.jpg */,
 			);
@@ -433,8 +431,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F03ABC381ABAA02100C7945C /* Simple.vertsh in Resources */,
+				F0F42BB21ABFBD8500EE9FBE /* MainViewController.xib in Resources */,
 				F0AF59621ABFAE7500FE8385 /* IMG_0159.jpg in Resources */,
-				F03ABC4A1ABAB28500C7945C /* Tarmac.dat in Resources */,
 				F03ABC351ABAA02100C7945C /* Line.fragsh in Resources */,
 				F03ABC361ABAA02100C7945C /* Line.vertsh in Resources */,
 				F03ABC3E1ABAA0BA00C7945C /* ImageTargetsViewController.xib in Resources */,
@@ -442,9 +440,7 @@
 				F0AF59601ABFAAB400FE8385 /* playBtn.png in Resources */,
 				F03ABC461ABAB1EB00C7945C /* StonesAndChips.dat in Resources */,
 				F03ABC371ABAA02100C7945C /* Simple.fragsh in Resources */,
-				F03ABC4B1ABAB28500C7945C /* Tarmac.xml in Resources */,
 				F03ABC471ABAB1EB00C7945C /* StonesAndChips.xml in Resources */,
-				F03ABB551ABA79CA00C7945C /* Main.storyboard in Resources */,
 				F03ABB5A1ABA79CA00C7945C /* LaunchScreen.xib in Resources */,
 				F03ABB571ABA79CA00C7945C /* Images.xcassets in Resources */,
 			);
@@ -458,12 +454,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				F03ABC411ABAA15000C7945C /* ImageTargetsEAGLView.mm in Sources */,
-				F03ABB521ABA79CA00C7945C /* ViewController.m in Sources */,
 				F0BE34C51ABC261D00D535F8 /* SampleMath.cpp in Sources */,
 				F03ABC331ABAA02100C7945C /* SampleApplicationShaderUtils.m in Sources */,
 				F03ABC341ABAA02100C7945C /* SampleApplicationUtils.cpp in Sources */,
 				F03ABC3D1ABAA0BA00C7945C /* ImageTargetsViewController.mm in Sources */,
 				F03ABC391ABAA02100C7945C /* Texture.mm in Sources */,
+				F0F42BB11ABFBD8500EE9FBE /* MainViewController.m in Sources */,
 				F03ABB4F1ABA79CA00C7945C /* AppDelegate.m in Sources */,
 				F03ABB4C1ABA79CA00C7945C /* main.m in Sources */,
 				F03ABC311ABAA02100C7945C /* SampleApplication3DModel.m in Sources */,
@@ -474,14 +470,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		F03ABB531ABA79CA00C7945C /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F03ABB541ABA79CA00C7945C /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		F03ABB581ABA79CA00C7945C /* LaunchScreen.xib */ = {
 			isa = PBXVariantGroup;
 			children = (

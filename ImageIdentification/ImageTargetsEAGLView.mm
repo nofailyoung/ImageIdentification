@@ -5,8 +5,8 @@
 //  Created by 周俊杰 on 15/3/19.
 //  Copyright (c) 2015年 北京金溪欣网络科技有限公司. All rights reserved.
 //
-#define NUM_AUGMENTATION_TEXTURES 4
-#define NUM_VIDEO_TARGETS 4
+
+#define NUM_VIDEO_TARGETS 11
 
 #import <QuartzCore/QuartzCore.h>
 #import <OpenGLES/ES2/gl.h>
@@ -33,12 +33,7 @@ namespace {
     // --- Data private to this unit ---
     
     // Teapot texture filenames
-    const char* textureFilenames[] = {
-        "TextureTeapotBrass.png",
-        "TextureTeapotBlue.png",
-        "TextureTeapotRed.png",
-        "building_texture.jpeg"
-    };
+
     int touchedTarget = -1;
     // Model scale factor
     struct tagVideoData {
@@ -206,12 +201,28 @@ namespace {
         if (strcmp(imageTarget.getName(), "0") == 0)
         {
             playerIndex = 0;
-        }else if (strcmp(imageTarget.getName(), "1") == 0) {
+        }else if (strcmp(imageTarget.getName(), "01") == 0) {
             playerIndex = 1;
-        }else if (strcmp(imageTarget.getName(), "IMG_0159") == 0) {
+        }else if (strcmp(imageTarget.getName(), "02") == 0) {
             playerIndex = 2;
-        }else if (strcmp(imageTarget.getName(), "3") == 0) {
+        }else if (strcmp(imageTarget.getName(), "03") == 0) {
             playerIndex = 3;
+        }else if (strcmp(imageTarget.getName(), "04") == 0) {
+            playerIndex = 4;
+        }else if (strcmp(imageTarget.getName(), "05") == 0) {
+            playerIndex = 5;
+        }else if (strcmp(imageTarget.getName(), "06") == 0) {
+            playerIndex = 6;
+        }else if (strcmp(imageTarget.getName(), "07") == 0) {
+            playerIndex = 7;
+        }else if (strcmp(imageTarget.getName(), "08") == 0) {
+            playerIndex = 8;
+        }else if (strcmp(imageTarget.getName(), "09") == 0) {
+            playerIndex = 9;
+        }else if (strcmp(imageTarget.getName(), "10") == 0) {
+            playerIndex = 10;
+        }else if (strcmp(imageTarget.getName(), "11") == 0) {
+            playerIndex = 11;
         }
         
         videoData[playerIndex].isActive = YES;
@@ -242,9 +253,9 @@ namespace {
         
         SampleApplicationUtils::translatePoseMatrix(0.0f, 0.0f, 2.0f, &modelViewMatrixButton.data[0]);
         
-        SampleApplicationUtils::scalePoseMatrix(videoData[playerIndex].targetPositiveDimensions.data[1]/5,
-                                                videoData[playerIndex].targetPositiveDimensions.data[1]/5,
-                                                videoData[playerIndex].targetPositiveDimensions.data[1]/5,
+        SampleApplicationUtils::scalePoseMatrix(videoData[playerIndex].targetPositiveDimensions.data[1]/2,
+                                                videoData[playerIndex].targetPositiveDimensions.data[1]/2,
+                                                videoData[playerIndex].targetPositiveDimensions.data[1]/2,
                                                 &modelViewMatrixButton.data[0]);
         
         SampleApplicationUtils::multiplyMatrix(projMatrix.data,
@@ -405,7 +416,7 @@ namespace {
 
 #pragma mark - User interaction
 
-- (bool) handleTouchPoint:(CGPoint) point {
+- (int) handleTouchPoint:(CGPoint) point {
     // Store the current touch location
     touchLocation_X = point.x;
     touchLocation_Y = point.y;
@@ -413,12 +424,7 @@ namespace {
     // Determine which target was touched (if no target was touch, touchedTarget
     // will be -1)
     touchedTarget = [self tapInsideTargetWithID];
-    if (touchedTarget != -1) {
-        NSLog(@"%d",touchedTarget);
-        return YES;
-    }else {
-        return NO;
-    }
+    return touchedTarget;
 }
 
 - (int)tapInsideTargetWithID
